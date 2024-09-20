@@ -11,6 +11,7 @@ parser.add_argument('-p', '--port', help='RC Serial Port', default="COM9")
 
 args = parser.parse_args()
 gamepad = vg.VX360Gamepad()
+camera = 0
 
 events = (
     gamepad.left_trigger,
