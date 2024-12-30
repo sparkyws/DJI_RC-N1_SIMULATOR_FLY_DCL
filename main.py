@@ -11,6 +11,7 @@ parser.add_argument('-p', '--port', help='RC Serial Port', default="COM9")
 
 args = parser.parse_args()
 gamepad = vg.VX360Gamepad()
+camera = 0
 
 events = (
     gamepad.left_trigger,
@@ -129,19 +130,21 @@ try:
 
     result = []
     ports = serial.tools.list_ports.comports(True)
-
+    camera = 0 
     for port in ports:
         try:
-            print(port.description)
-            if port.description.find("For Protocol") != -1:
-                print("found DJI USB VCOM For Protocol")
+            print(f"Checking port: {port.description}")
+            if "Protocol" in port.description or "USB" in port.description:  # Adjust logic if needed
+                print("Found possible DJI USB VCOM")
                 s = serial.Serial(port=port.name, baudrate=115200)
                 print('Opened serial port:', s.name)
+                break  # Exit loop once a valid port is found
             else:
-                print("skip")
-            result.append(port)
-        except (OSError, serial.SerialException):
-            pass
+                print("Not a valid port, skipping.")
+        except (OSError, serial.SerialException) as e:
+            print(f"Error opening port {port.name}: {e}")
+
+
 
 except serial.SerialException as e:
     print('Could not open serial port:', e)
